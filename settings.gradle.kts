@@ -25,3 +25,5 @@ dependencyResolutionManagement {
 rootProject.name = "Plantopia"
 include(":app")
 include(":core:database")
+include(":feature:home")
+include(":core:common")

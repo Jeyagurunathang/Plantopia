@@ -41,11 +41,15 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.compose.runtime)
+
     // HILT
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
     implementation(project(":core:database"))
+    implementation(project(":core:common"))
+    implementation(project(":feature:home"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
