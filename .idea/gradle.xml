@@ -16,7 +16,12 @@
             <option value="$PROJECT_DIR$/core/database" />
             <option value="$PROJECT_DIR$/core/model" />
             <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/addplant" />
+            <option value="$PROJECT_DIR$/feature/addplant/api" />
+            <option value="$PROJECT_DIR$/feature/addplant/impl" />
             <option value="$PROJECT_DIR$/feature/home" />
+            <option value="$PROJECT_DIR$/feature/home/api" />
+            <option value="$PROJECT_DIR$/feature/home/impl" />
           </set>
         </option>
       </GradleProjectSettings>
