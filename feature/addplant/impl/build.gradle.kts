@@ -31,6 +31,8 @@ android {
 dependencies {
     implementation(project(":feature:addplant:api"))
     implementation(project(":core:common"))
+    implementation(project(":core:data"))
+    implementation(project(":core:model"))
 
     // HILT
     implementation(libs.hilt.android)
