@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.jey.core.model.Plant
 
 @Entity(
     tableName = "plant",
@@ -14,4 +15,11 @@ data class PlantEntity(
     @ColumnInfo(name = "plant_name") val plantName: String,
     val description: String,
     @ColumnInfo(name = "plant_image_path") val plantImagePath: String?,
+)
+
+fun PlantEntity.asExternalModel() = Plant(
+    id = this.id,
+    name = this.plantName,
+    description = this.description,
+    image = this.plantImagePath
 )

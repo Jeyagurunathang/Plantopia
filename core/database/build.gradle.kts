@@ -30,6 +30,8 @@ android {
 }
 
 dependencies {
+    api(project(":core:model"))
+
     // ROOM
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
