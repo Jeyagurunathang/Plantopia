@@ -1,6 +1,5 @@
 package com.jey.core.common.ui.components
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,12 +18,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.jey.core.common.R
 
 @Composable
 fun PlantCard(
     modifier: Modifier = Modifier,
-    @DrawableRes plantImage: Int,
+    plantImage: String?,
     plantName: String,
     plantDescription: String? = null
 ) {
@@ -36,15 +36,27 @@ fun PlantCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Image(
-                painter = painterResource(id = plantImage),
-                contentDescription = "Plant image",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop,
-            )
+            if (plantImage != null) {
+                AsyncImage(
+                    model = plantImage,
+                    contentDescription = "Plant image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop,
+                )
+            } else {
+                Image(
+                    painter = painterResource(R.drawable.aloe_vera),
+                    contentDescription = "Plant image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop,
+                )
+            }
 
             Text(
                 text = plantName,
@@ -64,7 +76,7 @@ fun PlantCard(
 @Composable
 fun PlantCardPreview() {
     PlantCard(
-        plantImage = R.drawable.aloe_vera,
+        plantImage = null,
         plantName = "Aloe Vera"
     )
 }

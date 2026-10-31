@@ -54,7 +54,7 @@ fun HomeScreenContent(
             key = { plant -> plant.id }
         ) { plant ->
             PlantCard(
-                plantImage = R.drawable.aloe_vera,
+                plantImage = plant.image,
                 plantName = plant.name,
                 plantDescription = plant.description
             )
