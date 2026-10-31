@@ -2,6 +2,8 @@ package com.jey.core.data.di
 
 import com.jey.core.data.repository.HomeRepository
 import com.jey.core.data.repository.HomeRepositoryImpl
+import com.jey.core.data.repository.PlantRepository
+import com.jey.core.data.repository.PlantRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,4 +17,9 @@ abstract class DataModule {
     internal abstract fun bindsHomeRepository(
         homeRepository: HomeRepositoryImpl
     ): HomeRepository
+
+    @Binds
+    internal abstract fun bindsPlantRepository(
+        plantRepository: PlantRepositoryImpl
+    ): PlantRepository
 }
