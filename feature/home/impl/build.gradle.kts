@@ -43,6 +43,9 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.kotlinx.serialization.core)
 
+    // Coil - 3
+    implementation(libs.coil3)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.material3)
