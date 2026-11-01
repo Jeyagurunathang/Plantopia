@@ -1,21 +1,28 @@
 package com.jey.feature.addplant.impl
 
+import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,9 +35,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.jey.core.android.utils.CameraUtils
 import com.jey.core.common.ui.components.PlantTextField
 
 @Composable
@@ -42,6 +51,7 @@ fun AddPlantScreen(
     var name by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
     var selectedImage by remember { mutableStateOf<String?>(null) }
+    var bottonSheetExpanded by remember { mutableStateOf(false) }
 
     AddPlantScreenContent(
         modifier = modifier,
@@ -52,6 +62,8 @@ fun AddPlantScreen(
         selectedImage = selectedImage,
         onSelectedImageChange = { selectedImage = it },
         onAddClicked = viewModel::insertDataIntoDb,
+        isBottonSheetExpanded = bottonSheetExpanded,
+        onUpdateBottomSheetExpanded = { bottonSheetExpanded = it },
         onBack = onBack
     )
 }
@@ -66,13 +78,26 @@ fun AddPlantScreenContent(
     selectedImage: String?,
     onSelectedImageChange: (String) -> Unit,
     onAddClicked: (String, String, String?) -> Unit,
+    isBottonSheetExpanded: Boolean,
+    onUpdateBottomSheetExpanded: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) {
+    val context = LocalContext.current
+    var tempImageUriCapturedFromCamera by remember { mutableStateOf<Uri?>(null) }
+
     val photoMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
             onSelectedImageChange(uri.toString())
         } else {
             Log.d("Photo Picker", "No media selected")
+        }
+    }
+
+    val cameraLaunch = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+        if (it) {
+            onSelectedImageChange(tempImageUriCapturedFromCamera.toString())
+        } else {
+            CameraUtils(context).deleteImageUri(tempImageUriCapturedFromCamera)
         }
     }
 
@@ -96,7 +121,7 @@ fun AddPlantScreenContent(
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clickable {
-                        photoMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+                        onUpdateBottomSheetExpanded(true)
                     }
             ) {
                 if (selectedImage != null) {
@@ -142,6 +167,92 @@ fun AddPlantScreenContent(
                 painter = painterResource(R.drawable.correct),
                 contentDescription = "Add Plant"
             )
+        }
+
+        PhotoAttachmentBottomSheet(
+            isBottomSheetExpanded = isBottonSheetExpanded,
+            onDismiss = { onUpdateBottomSheetExpanded(false) },
+            launchCamera = {
+                val imageUri = CameraUtils(context).getUriFromFile()
+                tempImageUriCapturedFromCamera = imageUri
+
+                cameraLaunch.launch(tempImageUriCapturedFromCamera)
+            },
+            launchPhotoPicker = { photoMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PhotoAttachmentBottomSheet(
+    modifier: Modifier = Modifier,
+    isBottomSheetExpanded: Boolean,
+    onDismiss: () -> Unit,
+    launchPhotoPicker: () -> Unit,
+    launchCamera: () -> Unit,
+) {
+    if (isBottomSheetExpanded) {
+        ModalBottomSheet(
+            modifier = modifier,
+            onDismissRequest = onDismiss,
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                PhotoAttachmentBottomSheetItem(
+                    icon = R.drawable.camera,
+                    iconDescription = "Camera",
+                    label = "Camera",
+                    onClick = {
+                        launchCamera()
+                        onDismiss()
+                    },
+                )
+
+                PhotoAttachmentBottomSheetItem(
+                    icon = R.drawable.photo_library,
+                    iconDescription = "Gallery",
+                    label = "Gallery",
+                    onClick = {
+                        launchPhotoPicker()
+                        onDismiss()
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PhotoAttachmentBottomSheetItem(
+    modifier: Modifier = Modifier,
+    @DrawableRes icon: Int,
+    iconDescription: String,
+    label: String,
+    onClick: () -> Unit,
+) {
+    Button(
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = Color.Black
+        ),
+        onClick = onClick
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = iconDescription
+            )
+
+            Text(text = label)
         }
     }
 }
